@@ -15,6 +15,7 @@ class PITOIC
 public:
     void begin(SPICREATE::SPICreate *targetSPI, int cs, uint32_t freq = 8000000);
     void Get(uint8_t *rx);
+    // *** LITTLE ENDIAN ***
     // (uint32_t)rx[0] << 8 | (uint32_t)rx[1] means PITO raw data
 };
 

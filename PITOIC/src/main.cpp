@@ -24,9 +24,9 @@ void loop()
 {
   uint8_t rx[2];
   pitoic.Get(rx);
-  Serial.print(rx[1]);
-  Serial.print(",");
   Serial.print(rx[0]);
+  Serial.print(",");
+  Serial.print(rx[1]);
   Serial.println();
   delay(500);
   // put your main code here, to run repeatedly:
