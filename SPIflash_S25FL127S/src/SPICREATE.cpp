@@ -36,7 +36,7 @@ bool SPICreate::begin(uint8_t spi_bus, int8_t sck, int8_t miso, int8_t mosi, uin
     }
 
     host = (spi_bus == HSPI) ? HSPI_HOST : VSPI_HOST;
-    dma_chan = 0;
+    dma_chan = 1;
     esp_err_t e = spi_bus_initialize(host, &bus_cfg, dma_chan);
     if (e != ESP_OK)
     {
@@ -88,7 +88,7 @@ void SPICreate::sendCmd(uint8_t cmd, int deviceHandle)
 {
     spi_transaction_t comm = {};
     comm.flags = SPI_TRANS_USE_TXDATA;
-    comm.length = 16;
+    comm.length = 8;
     comm.tx_data[0] = cmd;
     comm.user = (void *)CSs[deviceHandle];
     pollTransmit(&comm, deviceHandle);
