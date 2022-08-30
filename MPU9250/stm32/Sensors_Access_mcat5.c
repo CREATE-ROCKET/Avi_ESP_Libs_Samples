@@ -20,12 +20,12 @@ SPI_HandleTypeDef hspi2;
 #define ICM_WhoAmI_Adress 0x75//WhoAmI�̃A�h���X
 #define ICM_16G 0x18
 #define ICM_2500deg 0x18
-//LPS22HB�̏��萔
+//LPS25HB�̏��萔
 #define LPS_SPI hspi2 //LPS SPI
 #define LPS_Data1_Adress 0x28 //�C���f�[�^��ۊǂ��郌�W�X�^�̃A�h���X
 #define LPS_Data2_Adress 0x2B
-#define LPS_WakeUp_Adress 0x20 //LPS22HB�X���[�v�����A�h���X
-#define LPS_WakeUp_Value 0x90 //LPS22HB�X���[�v������������
+#define LPS_WakeUp_Adress 0x20 //LPS25HB�X���[�v�����A�h���X
+#define LPS_WakeUp_Value 0x90 //LPS25HB�X���[�v������������
 #define LPS_WhoAmI_Adress 0x0F//WhoAmI�̃A�h���X
 //MPU9250 Define
 #define MPU_SPI hspi1//MPU SPI
@@ -199,7 +199,7 @@ void ICM_Calibration(int16_t Gyro_Calibrate_Data[3]) {
 	Gyro_Calibrate_Data[2] = Gyro_Calibrate_Data[2]/CalibrateCount;
 }
 
-//LPS22HB�����ݒ�
+//LPS25HB�����ݒ�
 void LPS_WakeUp() {
 	LPS_Write_Byte(LPS_WakeUp_Adress,LPS_WakeUp_Value);//�X���[�v�����A�o��50Hz
 }
@@ -256,12 +256,12 @@ void MPU_6axis_Raw(uint8_t Recieve_Data[14],int16_t MPU_Raw_Data[6]){
 
 int MPU_Compass_Raw(uint8_t Receive_Data[7],int16_t MPU_Raw_Data[3]){
     MPU_Write_Byte(0x25,0x0c|0x80);//スレーブアドレスを読み取り用へ
-    MPU_Write_Byte(0x26,0x03);//I2Cを用いて地磁気センサからmpuへデータ読み出し
-    MPU_Write_Byte(0x27,0x97);//良くわからないけど　毎回スレーブの設定しないとバグる
+    MPU_Write_Byte(0x26,0x03);//I2Cを用いて地磁気センサとmpuのやり取りするアドレスの対応
+    MPU_Write_Byte(0x27,0x97);//地磁気センサからmpuへのデータの読み出し
     uint8_t s[1];
-    MPU_Read_Bytes(0x80|0x3A,s,1);//データが準備できているか
-    if(s[0]&0x01){
-    	MPU_Read_Bytes(0x80|0x49,Receive_Data,7);//EXT_SENS_DATA_00からI2Cのデータが入る　最後のデータはST2（データ状態）で読み込まないと更新されない
+    MPU_Read_Bytes(0x3A,s,1);
+    if(s[0]&0x01){//データが準備できているか
+    	MPU_Read_Bytes(0x49,Receive_Data,7);//EXT_SENS_DATA_00からI2Cのデータが入る　最後のデータはST2（データ状態）で読み込まないと更新されない
     	MPU_Raw_Data[0]=(Receive_Data[1]<<8|Receive_Data[0]);
 		MPU_Raw_Data[1]=(Receive_Data[3]<<8|Receive_Data[2]);
 		MPU_Raw_Data[2]=(Receive_Data[5]<<8|Receive_Data[4]);
