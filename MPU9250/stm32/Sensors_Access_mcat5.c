@@ -257,7 +257,7 @@ void MPU_6axis_Raw(uint8_t Recieve_Data[14],int16_t MPU_Raw_Data[6]){
 int MPU_Compass_Raw(uint8_t Receive_Data[7],int16_t MPU_Raw_Data[3]){
     MPU_Write_Byte(0x25,0x0c|0x80);//スレーブアドレスを読み取り用へ
     MPU_Write_Byte(0x26,0x03);//I2Cを用いて地磁気センサとmpuのやり取りするアドレスの対応
-    MPU_Write_Byte(0x27,0x97);//地磁気センサからmpuへのデータの読み出し
+    MPU_Write_Byte(0x27,0x97);//地磁気センサからmpuへのデータの読み出し有効化
     uint8_t s[1];
     MPU_Read_Bytes(0x3A,s,1);
     if(s[0]&0x01){//データが準備できているか
