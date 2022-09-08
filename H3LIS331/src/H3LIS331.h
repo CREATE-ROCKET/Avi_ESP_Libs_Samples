@@ -35,7 +35,7 @@ class H3LIS331
 public:
     void begin(SPICREATE::SPICreate *targetSPI, int cs, uint32_t freq = 8000000);
     uint8_t WhoImI();
-    void Get(int16_t *rx);
+    void Get(int16_t *rx, uint8_t *rx_buf);
 };
 
 void H3LIS331::begin(SPICREATE::SPICreate *targetSPI, int cs, uint32_t freq)
@@ -76,9 +76,9 @@ uint8_t H3LIS331::WhoImI()
 {
     return H3LIS331SPI->readByte(H3LIS331_WhoAmI_Address | 0x80, deviceHandle);
 }
-void H3LIS331::Get(int16_t *rx)
+
+void H3LIS331::Get(int16_t *rx, uint8_t *rx_buf)
 {
-    uint8_t rx_buf[6];
     spi_transaction_t comm = {};
     comm.flags = SPI_TRANS_VARIABLE_CMD | SPI_TRANS_VARIABLE_ADDR;
     comm.length = (6) * 8;
