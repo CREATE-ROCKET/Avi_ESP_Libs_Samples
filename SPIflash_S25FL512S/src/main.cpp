@@ -10,6 +10,8 @@
 SPICREATE::SPICreate SPIC1;
 Flash flash1;
 
+#define PAGE_LENGTH 512 // You can change this number to an aliquot part of 512.
+
 // SPIflash S25FL512S 用サンプルコード
 
 void setup()
@@ -29,12 +31,47 @@ void loop()
     {
       flash1.erase();
     }
-
+    if (cmd == 'r')
+    {
+      Serial.println("r is pushed");
+      uint8_t rx[512];
+      flash1.read(0x000, rx);
+      for (int i = 0; i < 512; i++)
+      {
+        if (i % 16 == 0)
+        {
+          Serial.println();
+        }
+        Serial.print(rx[i]);
+      }
+      Serial.println();
+      flash1.read(0x200, rx);
+      for (int i = 0; i < 512; i++)
+      {
+        if (i % 16 == 0)
+        {
+          Serial.println();
+        }
+        Serial.print(rx[i]);
+      }
+      Serial.println();
+      flash1.read(0x400, rx);
+      for (int i = 0; i < 512; i++)
+      {
+        if (i % 16 == 0)
+        {
+          Serial.println();
+        }
+        Serial.print(rx[i]);
+      }
+      Serial.println();
+      Serial.println();
+    }
     if (cmd == 't')
     {
-      uint8_t rx[256];
-      flash1.read(0x1000000, rx);
-      for (int i = 0; i < 256; i++)
+      uint8_t rx[512];
+      flash1.read(0x000, rx);
+      for (int i = 0; i < 512; i++)
       {
         Serial.print(rx[i]);
       }
@@ -42,17 +79,19 @@ void loop()
 
       delay(100);
 
-      uint8_t tx[256];
-      for (int i = 0; i < 256; i++)
+      uint8_t tx[512] = {};
+      for (int i = 0; i < 512; i++)
       {
-        tx[i] = 0xFF - i;
+        tx[i] = i / 2; // integer
+        // Serial.print(i / 2);
       }
-      flash1.write(0x1000000, tx);
+      Serial.println();
+      flash1.write(0x200, tx);
 
       delay(100);
 
-      flash1.read(0x1000000, rx);
-      for (int i = 0; i < 256; i++)
+      flash1.read(0x200, rx);
+      for (int i = 0; i < 512; i++)
       {
         Serial.print(rx[i]);
       }

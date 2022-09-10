@@ -10,6 +10,8 @@ using namespace arduino::esp32::spi::dma;
 #define CMD_RDID 0x9f
 #define CMD_READ 0x03
 #define CMD_4READ 0x13
+#define CMD_FAST_READ 0x0B
+#define CMD_4FAST_READ 0x0C
 #define CMD_WREN 0x06
 #define CMD_WRDI 0x04
 #define CMD_P4E 0x20
@@ -20,7 +22,8 @@ using namespace arduino::esp32::spi::dma;
 #define CMD_4PP 0x12
 #define CMD_RDSR 0x05
 
-#define ADDR_LENGTH 32
+#define ADDRESS_LENGTH 32
+#define PAGE_LENGTH 512 // You can change this number to an aliquot part of 512.
 
 class Flash
 {
@@ -91,8 +94,8 @@ void Flash::write(uint32_t addr, uint8_t *tx)
     flashSPI->sendCmd(CMD_WREN, deviceHandle);
     spi_transaction_t comm = {};
     comm.flags = SPI_TRANS_VARIABLE_CMD | SPI_TRANS_VARIABLE_ADDR;
-    comm.length = (256) * 8;
-    comm.cmd = CMD_PP;
+    comm.length = (PAGE_LENGTH)*8;
+    comm.cmd = CMD_4PP;
     comm.addr = addr;
     comm.tx_buffer = tx;
     comm.user = (void *)&CS;
@@ -100,7 +103,7 @@ void Flash::write(uint32_t addr, uint8_t *tx)
     spi_transaction_ext_t spi_transaction = {};
     spi_transaction.base = comm;
     spi_transaction.command_bits = 8;
-    spi_transaction.address_bits = ADDR_LENGTH;
+    spi_transaction.address_bits = ADDRESS_LENGTH;
 
     flashSPI->transmit((spi_transaction_t *)&spi_transaction, deviceHandle);
     return;
@@ -109,8 +112,8 @@ void Flash::read(uint32_t addr, uint8_t *rx)
 {
     spi_transaction_t comm = {};
     comm.flags = SPI_TRANS_VARIABLE_CMD | SPI_TRANS_VARIABLE_ADDR;
-    comm.length = (256) * 8;
-    comm.cmd = CMD_READ;
+    comm.length = (PAGE_LENGTH)*8;
+    comm.cmd = CMD_4READ;
     comm.addr = addr;
     comm.tx_buffer = NULL;
     comm.rx_buffer = rx;
@@ -119,7 +122,7 @@ void Flash::read(uint32_t addr, uint8_t *rx)
     spi_transaction_ext_t spi_transaction = {};
     spi_transaction.base = comm;
     spi_transaction.command_bits = 8;
-    spi_transaction.address_bits = ADDR_LENGTH;
+    spi_transaction.address_bits = ADDRESS_LENGTH;
     flashSPI->transmit((spi_transaction_t *)&spi_transaction, deviceHandle);
 }
 
