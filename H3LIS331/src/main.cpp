@@ -3,10 +3,14 @@
 #include <SPICREATE.h>
 #include <H3LIS331.h>
 
-#define H3LIS331SCK 14
-#define H3LIS331MISO 12
-#define H3LIS331MOSI 13
-#define H3LIS331CS 33
+#define H3LIS331SCK 33
+#define H3LIS331MISO 25
+#define H3LIS331MOSI 26
+#define H3LIS331CS 32
+// #define H3LIS331SCK 14
+// #define H3LIS331MISO 12
+// #define H3LIS331MOSI 13
+// #define H3LIS331CS 33
 
 bool WhoAmI_Ok = false;
 
@@ -48,21 +52,26 @@ void loop()
   {
     int16_t rx[3];
     H3lis331.Get(rx);
-
-    // change value
-    float rx_400g[3];
-    rx_400g[0] = (float)rx[0] * 2 * 400 / 65536;
-    rx_400g[1] = (float)rx[1] * 2 * 400 / 65536;
-    rx_400g[2] = (float)rx[2] * 2 * 400 / 65536;
-
-    Serial.print("\t\tx: ");
-    Serial.print(rx_400g[0]);
+    Serial.print(rx[0]);
     Serial.print(",");
-    Serial.print("\ty: ");
-    Serial.print(rx_400g[1]);
+    Serial.print(rx[1]);
     Serial.print(",");
-    Serial.print("\tz: ");
-    Serial.println(rx_400g[2]);
-    delay(100);
+    Serial.println(rx[2]);
+
+    // // change value
+    // float rx_400g[3];
+    // rx_400g[0] = (float)rx[0] * 2 * 400 / 65536;
+    // rx_400g[1] = (float)rx[1] * 2 * 400 / 65536;
+    // rx_400g[2] = (float)rx[2] * 2 * 400 / 65536;
+
+    // Serial.print("\t\tx: ");
+    // Serial.print(rx_400g[0]);
+    // Serial.print(",");
+    // Serial.print("\ty: ");
+    // Serial.print(rx_400g[1]);
+    // Serial.print(",");
+    // Serial.print("\tz: ");
+    // Serial.println(rx_400g[2]);
+    // delay(100);
   }
 }
