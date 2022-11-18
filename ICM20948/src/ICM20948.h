@@ -25,8 +25,6 @@
 #define ICM_USER_BANK2 0b00100000
 #define ICM_USER_BANK3 0b00110000
 
-//#define ICM_2500deg 0x18
-
 class ICM
 {
     int CS;
@@ -36,7 +34,6 @@ class ICM
 public:
     void begin(SPICREATE::SPICreate *targetSPI, int cs, uint32_t freq = 8000000);
     uint8_t WhoAmI();
-    uint8_t UserBank();
     void Get(int16_t *rx);
 };
 
@@ -72,11 +69,11 @@ void ICM::begin(SPICREATE::SPICreate *targetSPI, int cs, uint32_t freq)
 }
 uint8_t ICM::WhoAmI()
 {
-    return ICMSPI->readByte(0x80 | 0x06, deviceHandle);
+    return ICMSPI->readByte(0x80 | ICM_WhoAmI_Adress, deviceHandle);
 }
 
 void ICM::Get(int16_t *rx)
-{
+{   
     uint8_t rx_buf[12];
     spi_transaction_t comm = {};
     comm.flags = SPI_TRANS_VARIABLE_CMD | SPI_TRANS_VARIABLE_ADDR;
