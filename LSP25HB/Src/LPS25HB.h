@@ -11,6 +11,8 @@
 
 #define LPS_WakeUp_Adress 0x20
 #define LPS_WakeUp_Value 0xC0
+#define LPS_Setting_Adress 0x21
+#define LPS_Settig_Value 0x08
 #define LPS_WhoAmI_Adress 0x0F
 
 class LPS
@@ -49,7 +51,9 @@ void LPS::begin(SPICREATE::SPICreate *targetSPI, int cs, uint32_t freq)
     if_cfg.post_cb = csSet;
 
     deviceHandle = LPSSPI->addDevice(&if_cfg, cs);
+    LPSSPI->setReg(LPS_Setting_Adress, LPS_Settig_Value, deviceHandle);
     LPSSPI->setReg(LPS_WakeUp_Adress, LPS_WakeUp_Value, deviceHandle);
+
     return;
 }
 uint8_t LPS::WhoAmI()
