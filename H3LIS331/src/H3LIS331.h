@@ -1,3 +1,4 @@
+// version 2.2.0
 #pragma once
 
 #ifndef H3LIS331_H
@@ -35,7 +36,9 @@ class H3LIS331
 public:
     void begin(SPICREATE::SPICreate *targetSPI, int cs, uint32_t freq = 8000000);
     uint8_t WhoImI();
-    void Get(int16_t *rx, uint8_t *rx_buf);
+    uint8_t WhoAmI();
+    void Get(int16_t *rx);
+    void Get2(int16_t *rx, uint8_t *rx_buf);
 };
 
 void H3LIS331::begin(SPICREATE::SPICreate *targetSPI, int cs, uint32_t freq)
@@ -71,13 +74,42 @@ void H3LIS331::begin(SPICREATE::SPICreate *targetSPI, int cs, uint32_t freq)
     H3LIS331SPI->setReg(H3LIS331_STATUS_REG_Address, H3LIS331_STATUS_REG, deviceHandle);
     return;
 }
-
 uint8_t H3LIS331::WhoImI()
+{
+    return H3LIS331::WhoAmI();
+}
+uint8_t H3LIS331::WhoAmI()
 {
     return H3LIS331SPI->readByte(H3LIS331_WhoAmI_Address | 0x80, deviceHandle);
 }
+void H3LIS331::Get(int16_t *rx)
+{
+    uint8_t rx_buf[6];
+    spi_transaction_t comm = {};
+    comm.flags = SPI_TRANS_VARIABLE_CMD | SPI_TRANS_VARIABLE_ADDR;
+    comm.length = (6) * 8;
 
-void H3LIS331::Get(int16_t *rx, uint8_t *rx_buf)
+    uint16_t register_address = H3LIS331_Data_Address;
+    register_address |= 0x40;
+    comm.cmd = register_address | 0x80;
+
+    comm.tx_buffer = NULL;
+    comm.rx_buffer = rx_buf;
+    comm.user = (void *)CS;
+
+    spi_transaction_ext_t spi_transaction = {};
+    spi_transaction.base = comm;
+    spi_transaction.command_bits = 8;
+    H3LIS331SPI->pollTransmit((spi_transaction_t *)&spi_transaction, deviceHandle);
+    rx[0] = rx_buf[0];
+    rx[0] |= ((uint16_t)rx_buf[1]) << 8;
+    rx[1] = rx_buf[2];
+    rx[1] |= ((uint16_t)rx_buf[3]) << 8;
+    rx[2] = rx_buf[4];
+    rx[2] |= ((uint16_t)rx_buf[5]) << 8;
+    return;
+}
+void H3LIS331::Get2(int16_t *rx, uint8_t *rx_buf)
 {
     spi_transaction_t comm = {};
     comm.flags = SPI_TRANS_VARIABLE_CMD | SPI_TRANS_VARIABLE_ADDR;
