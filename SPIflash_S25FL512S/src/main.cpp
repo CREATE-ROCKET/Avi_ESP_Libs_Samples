@@ -19,6 +19,7 @@ void setup()
   Serial.begin(115200);
   SPIC1.begin(VSPI, SCK1, MISO1, MOSI1);
   flash1.begin(&SPIC1, flashCS, 100000);
+  uint32_t address = flash1.setFlashAddress();
   // put your setup code here, to run once:
   Serial.println("Launched");
 }
